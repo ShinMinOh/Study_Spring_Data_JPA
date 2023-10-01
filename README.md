@@ -22,4 +22,5 @@ Repository에는 2가지 종류가 있습니다.
    
    Spring Data Jpa가 구현 클래스 대신 생성
    ![image](https://github.com/ShinMinOh/Study_Spring_Data_JPA/assets/74702677/b967b6e7-8f1f-434b-95eb-5b0527be90c3)
+   
   JpaRepository 인터페이스를 상속 받는 인터페이스만 잡아주면 Spring Data JPA가 구현 클래스를 프록시로 만들어서 인젝션해준다.
