@@ -167,4 +167,25 @@ class MemberRepositoryTest {
             System.out.println("member = "+member);
         }
     }
+
+    @Test
+    public void returnType() {                                                //MemberRepository 6번 test code
+        Member m0 = new Member("A", 10);
+        Member m0_1 = new Member("A", 30);
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m0);
+        memberRepository.save(m0_1);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> findListMember = memberRepository.findListByUsername("A"); //컬렉션
+        for(Member member : findListMember){
+            System.out.println("memberLIst = "+member);
+        }
+
+        Member findMember = memberRepository.findMemberByUsername("AAA");          //단건
+        System.out.println("findMember = "+findMember);
+
+    }
 }

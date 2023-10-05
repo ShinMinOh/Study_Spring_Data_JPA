@@ -66,4 +66,24 @@ public class MemberJpaRepository {
                 .setParameter("username", username)
                 .getResultList();
     }
+
+
+    //순수 JPA를 이용한 페이징과 정렬
+    public List<Member> findByPage(int age, int offset, int limit){  //나이:검색조건, 몇번째부터 시작해서 몇개를 가지고 올건지
+      return   em.createQuery("select m from Member m where m.age = :age order by m.username desc")
+            .setParameter("age", age)
+            .setFirstResult(offset)   //어디서부터 가져올건지
+            .setMaxResults(limit)     //몇개를 가져올건지
+            .getResultList();
+    }
+
+    //페이징 쿼리를 짤때, 현재 내 페이지가 몇번째 페이지인지 알려주기 위해 totalcount를 만듦.
+    // totalCount에는 단순하게 count만 필요로 하기 때문에 sorting이 들어갈 필요가 없어 성능최적화를 위해 제외함.
+    public long totalCount(int age){
+        return em.createQuery("select count(m) from Member m where m.age = :age", Long.class)
+            .setParameter("age",age)
+            .getSingleResult(); //count 하나값을 가져오기때문에 SingleResult로 받음.
+    }
+
+
 }
