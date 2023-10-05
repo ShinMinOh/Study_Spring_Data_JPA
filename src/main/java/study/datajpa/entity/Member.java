@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)   // 이 어노테이션이 있으면 기본 생성자 안써줘도 됨.
 @ToString(of = {"id", "username", "age"})           // Team 같은 연관관계 필드는 ToString에 포함하지 않기. 타고 가서 다 출력될수 있음.
 /*@NamedQuery(
@@ -29,6 +29,7 @@ public class Member {
     public Member(String username) {
         this.username = username;
     }
+
 
     public Member(String username, int age) {
         this.username = username;
