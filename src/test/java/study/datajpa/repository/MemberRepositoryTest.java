@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import java.util.Arrays;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
 import java.util.Optional;
+import study.datajpa.entity.Team;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
+    @Autowired TeamRepository teamRepository;
 
     @Test
     public void testMember(){
@@ -84,19 +88,83 @@ class MemberRepositoryTest {
     }
 
 
-    /* Named Query 테스트코드
+    // Named Query 테스트코드
     @Test
-    public void testNamedQuery(){       //MemberRepository에 있는 findByUsername 가 실행됨.
+    public void testNamedQuery(){                                            //MemberRepository 2번 test code
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
         memberRepository.save(m1);
         memberRepository.save(m2);
 
-        List<Member> result = memberRepository.findByUsername("AAA");
-
+        List<Member> result = memberRepository.findByUsername("AAA");       //MemberRepository에 있는 findByUsername 가 실행됨.
         Member findMember = result.get(0);
         assertThat(findMember).isEqualTo(m1);
-    }*/
+    }
+
+    @Test
+    public void testQuery(){                                                //MemberRepository 3번 test code
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findUser("AAA", 10);
+
+        assertThat(result.get(0)).isEqualTo(m1);
+    }
+
+    @Test
+    public void findUsernameList() {                                                //MemberRepository 4번 값조회 test code
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<String> usernameList = memberRepository.findUsernameList();
+
+        // 값 조회
+        for(String s : usernameList){
+            System.out.println("s = "+s);
+        }
+        assertThat(usernameList.get(0)).isEqualTo(m1.getUsername());
+        assertThat(usernameList.get(1)).isEqualTo(m2.getUsername());
+    }
 
 
+    @Test
+    public void findMemberDto() {                                                //MemberRepository 4번 dto 조회 test code
+        Team team = new Team("teamA");
+        teamRepository.save(team);
+
+        Member m1 = new Member("AAA", 10);
+        m1.setTeam(team);
+        memberRepository.save(m1);
+
+        List<MemberDto> memberDto = memberRepository.findMemberDto();
+
+        // 값 조회
+        for(MemberDto dto : memberDto){
+            System.out.println("dto = "+dto);
+        }
+       /* System.out.println(memberDto.get(0).getUserName()); //AAA
+        System.out.println(memberDto.get(0).getTeamName()); //teaA
+        System.out.println(m1.getUsername());               //AAA
+        System.out.println(m1.getTeam().getName());         //teamA
+       */
+        assertThat(memberDto.get(0).getUserName()).isEqualTo(m1.getUsername());
+        assertThat(memberDto.get(0).getTeamName()).isEqualTo(m1.getTeam().getName());
+    }
+
+    @Test
+    public void findByNames() {                                                //MemberRepository 5번 test code
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+        for(Member member : result){
+            System.out.println("member = "+member);
+        }
+    }
 }
