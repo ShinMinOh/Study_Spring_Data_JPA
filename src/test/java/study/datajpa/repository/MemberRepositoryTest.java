@@ -1,11 +1,17 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -27,6 +33,8 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember(){
@@ -186,6 +194,70 @@ class MemberRepositoryTest {
 
         Member findMember = memberRepository.findMemberByUsername("AAA");          //단건
         System.out.println("findMember = "+findMember);
+    }
 
+
+    @Test
+    public void paging(){                                                           //MemberRepository 7번 test code
+        //given
+        memberRepository.save(new Member("member1",10));
+        memberRepository.save(new Member("member2",10));
+        memberRepository.save(new Member("member3",10));
+        memberRepository.save(new Member("member4",10));
+        memberRepository.save(new Member("member5",10));
+
+        int age = 10;
+
+        //when
+        //Spring Data Jpa는 페이지를 1부터가 아닌 0부터 시작함.
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        //Page 이점: totalcount 쿼리까지 같이 날려줌
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+
+        //위의 page의 경우 반환타입이 엔티티(Member)라 api에 반환할때 그대로 노출됨(위험)
+        //따라서 .map을 통해 MemberDto로 변환해서 반환하기 꼭!
+        Page<MemberDto> toMap = page.map(
+            member -> new MemberDto(member.getId(), member.getUsername(), null));
+
+        //then
+        List<Member> content = page.getContent();   //getContent() : 실제 3개의 컨텐츠내용 꺼내옴.
+        long totalElements = page.getTotalElements();    //getTotalCount와 동일
+
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+        System.out.println("totalElements = "+totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2);  //총 페이지 개수
+        assertThat(page.isFirst()).isTrue(); //당연히 첫번째 페이지니까 True
+        assertThat(page.hasNext()).isTrue();//다음 페이지가 있는가
+    }
+
+    @Test
+    public void bulkUpdate(){                                                       //MemberRepository 8번 test code
+        //given
+        memberRepository.save(new Member("member1",10));
+        memberRepository.save(new Member("member2",19));
+        memberRepository.save(new Member("member3",20));
+        memberRepository.save(new Member("member4",21));
+        memberRepository.save(new Member("member5",40));
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        List<Member> result = memberRepository.findByUsername("member5");
+        Member member5 = result.get(0);
+
+
+        System.out.println("result = "+result);
+        System.out.println("member5 = "+member5);
+
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
     }
 }

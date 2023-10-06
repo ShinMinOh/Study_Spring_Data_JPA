@@ -3,7 +3,10 @@ package study.datajpa.repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
@@ -53,5 +56,15 @@ public interface    MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findListByUsername(String username); //컬렉션
     Member findMemberByUsername(String username);     //단건
     Optional<Member> findOptionalByUsername(String username); //단건을 Optional로 감싸서 반환
+
+    //7. Spring Data Jpa - 페이징과 정렬
+    //Page 반환타입, 메서드 이름으로 쿼리(1번)
+    //파라미터로 Pageable 넘기고 반환타입을 Page로 하면 pageable위치에 페이징 조건이 들어감.
+    Page<Member> findByAge(int age, Pageable pageable);
+
+    //8. 벌크성 수정쿼리
+    @Modifying(clearAutomatically = true)                  // @Query 어노테이션을 통해 DML문 실행할 경우 반드시 붙이기.
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
 }
 
