@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -66,5 +67,23 @@ public interface    MemberRepository extends JpaRepository<Member, Long> {
     @Modifying(clearAutomatically = true)                  // @Query 어노테이션을 통해 DML문 실행할 경우 반드시 붙이기.
     @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
     int bulkAgePlus(@Param("age") int age);
+
+
+    //9. 페치조인
+    @Query("select m from Member m left join fetch m.team") // Member를 조회할때 연관된 Team을 같이 한방쿼리로 가지고옴.
+    List<Member> findMemberFetchJoin();
+
+    //10. 엔티티 그래프
+    // 페치조인 방식을 쿼리문을 쓰지 않고 Spring data Jpa처럼 이름만으로 쓰고자 할때
+    @Override
+    @EntityGraph(attributePaths = {"team"})     //team 엔티티까지 같이 가져오기
+    List<Member> findAll();
+
+    @EntityGraph(attributePaths = {"team"})     //team 엔티티까지 같이 가져오기
+    @Query("select m from Member m")
+    List<Member> findMemberEntityGraph();
+
+    @EntityGraph(attributePaths = {"team"})     //team 엔티티까지 같이 가져오기
+    List<Member> findEntityGraphByUsername(@Param("username") String username);
 }
 
