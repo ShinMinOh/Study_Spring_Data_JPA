@@ -285,7 +285,9 @@ class MemberRepositoryTest {
 
         for (Member member : members) {
             System.out.println("member = " + member.getUsername());
-            System.out.println("member.teamClass = "+ member.getTeam().getClass());
+            System.out.println(
+
+                "member.teamClass = "+ member.getTeam().getClass());
             System.out.println("member.team = "+ member.getTeam().getName());
         }
     }
@@ -301,7 +303,10 @@ class MemberRepositoryTest {
         //when
         Member findMember = memberRepository.findById(member1.getId()).get();
         findMember.setUsername("member2");
+    }
 
-
+    @Test
+    public void callCustom(){
+        List<Member> result = memberRepository.findMemberCustom();
     }
 }

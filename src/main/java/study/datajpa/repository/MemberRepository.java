@@ -22,8 +22,9 @@ import study.datajpa.entity.Member;
  * 1번: 간단한 쿼리 사용할때
  * 3번: 복잡한 쿼리 사용할때
  * Querydsl: 동적쿼리가 필요할때
+ * MemberRepositoryCustom : 따로 만든 사용자 정의 인터페이스 상속
  * */
-public interface    MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     //1. 쿼리 메소드: 메소드 이름으로 쿼리 생성.
     List<Member> findByUsernameAndAgeGreaterThan(String username,int age);
