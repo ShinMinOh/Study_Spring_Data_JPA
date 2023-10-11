@@ -285,9 +285,28 @@ class MemberRepositoryTest {
 
         for (Member member : members) {
             System.out.println("member = " + member.getUsername());
-            System.out.println("member.teamClass = "+ member.getTeam().getClass());
+            System.out.println(
+
+                "member.teamClass = "+ member.getTeam().getClass());
             System.out.println("member.team = "+ member.getTeam().getName());
         }
+    }
 
+    @Test
+    public void queryHint(){
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findById(member1.getId()).get();
+        findMember.setUsername("member2");
+    }
+
+    @Test
+    public void callCustom(){
+        List<Member> result = memberRepository.findMemberCustom();
     }
 }

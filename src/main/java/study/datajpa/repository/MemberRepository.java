@@ -1,5 +1,6 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.QueryHint;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
@@ -20,8 +22,9 @@ import study.datajpa.entity.Member;
  * 1번: 간단한 쿼리 사용할때
  * 3번: 복잡한 쿼리 사용할때
  * Querydsl: 동적쿼리가 필요할때
+ * MemberRepositoryCustom : 따로 만든 사용자 정의 인터페이스 상속
  * */
-public interface    MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     //1. 쿼리 메소드: 메소드 이름으로 쿼리 생성.
     List<Member> findByUsernameAndAgeGreaterThan(String username,int age);
@@ -85,5 +88,10 @@ public interface    MemberRepository extends JpaRepository<Member, Long> {
 
     @EntityGraph(attributePaths = {"team"})     //team 엔티티까지 같이 가져오기
     List<Member> findEntityGraphByUsername(@Param("username") String username);
+
+
+    // 11. 쿼리 힌트(변경감지(update) 적용X)
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    Member findReadOnlyByUsername(String username);
 }
 
