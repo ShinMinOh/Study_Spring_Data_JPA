@@ -93,5 +93,10 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     // 11. 쿼리 힌트(변경감지(update) 적용X)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     Member findReadOnlyByUsername(String username);
+
+    // 12. Projections
+    List<UsernameOnly> findProjectionsByUsername(@Param("username") String username);                        //@Param : JPQL에 명시된 네임드 파라미터(:username)를 넘겨줘야할때 사용.
+        //반환 타입: UsernameOnly 인터페이스
+
 }
 
