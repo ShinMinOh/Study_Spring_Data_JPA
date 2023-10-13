@@ -332,4 +332,54 @@ class MemberRepositoryTest {
         }
 
     }
+
+    @Test
+    public void projectionsDto(){
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<UsernameOnlyDto> result = memberRepository.findProjectionsDtoByUsername("m1");   //UsernameOnly : 구현체가 아닌 인터페이스
+
+        for (UsernameOnlyDto usernameOnly : result) {
+            System.out.println("usernameOnly = "+ usernameOnly.getUsername());
+        }
+    }
+
+
+    @Test
+    public void NestedClosedProjection(){
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<NestedClosedProjections> result = memberRepository.findProjectionsWithGenericByUsername("m1",
+            NestedClosedProjections.class);//UsernameOnly : 구현체가 아닌 인터페이스
+
+        for (NestedClosedProjections nestedClosedProjections : result) {
+            String username = nestedClosedProjections.getUsername();
+            System.out.println("username = "+ username);
+            String teamName = nestedClosedProjections.getTeam().getName();
+            System.out.println("teamName = "+ teamName);
+        }
+
+    }
 }

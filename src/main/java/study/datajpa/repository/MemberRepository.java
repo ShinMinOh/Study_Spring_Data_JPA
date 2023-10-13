@@ -98,5 +98,14 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     List<UsernameOnly> findProjectionsByUsername(@Param("username") String username);                        //@Param : JPQL에 명시된 네임드 파라미터(:username)를 넘겨줘야할때 사용.
         //반환 타입: UsernameOnly 인터페이스
 
+    // 13. Dto를 이용한 Projections
+    List<UsernameOnlyDto> findProjectionsDtoByUsername(@Param("username") String username);                        //@Param : JPQL에 명시된 네임드 파라미터(:username)를 넘겨줘야할때 사용.
+    //반환 타입: UsernameOnly 인터페이스
+
+
+    // 14. Projections with Generic Type
+    <T> List<T> findProjectionsWithGenericByUsername(@Param("username") String username, Class<T> type);                        //@Param : JPQL에 명시된 네임드 파라미터(:username)를 넘겨줘야할때 사용.
+    //반환 타입: UsernameOnly 인터페이스
+    //username 말고도 다른 필드값들을 가져오고자 할때 제너릭 타입 추가
 }
 
